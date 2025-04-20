@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Форма подачи жалобы</title>
+</head>
+<body>
+  <div class="container">
+    <h2>Форма подачи жалобы</h2>
+
+    <label for="nickname">Ваш никнейм:</label>
+    <input type="text" id="nickname" placeholder="Введите ваш ник..." />
+
+    <p>Выберите категорию:</p>
+    <div id="categories">
+      <button class="category-btn">1. Напишите свой вопрос или обращение. Ответит модератор.</button>
+      <button class="category-btn">2. Обязательно прикрепите видео или скрин как доказательство.</button>
+      <button class="category-btn">3. Укажите ник или ID нарушителя и прикрепите скриншот / видео нарушения.</button>
+      <button class="category-btn">4. Опишите ситуацию и приложите подтверждение, если есть.</button>
+      <button class="category-btn">5. Жалоба на ложные обвинения, фейковые скрины, дезинформацию.</button>
+      <button class="category-btn">6. Укажите ник и скиньте переписку/доказательства.</button>
+      <button class="category-btn">7. Жалоба на развод, фейковые донаты, обман. Нужны скрины!</button>
+      <button class="category-btn">8. Жалоба на ссылки, флуд, масс-рассылки. Скиньте пример.</button>
+      <button class="category-btn">9. Любая другая жалоба или сообщение. Опишите ситуацию словами.</button>
+    </div>
+
+    <div class="form-group">
+      <label for="complaint">Введите жалобу:</label>
+      <textarea id="complaint" rows="5" placeholder="Опишите ситуацию..."></textarea>
+      <label for="file">Прикрепите файл:</label>
+      <input type="file" id="file" />
+      <button class="submit-btn" onclick="sendComplaint()">Отправить</button>
+    </div>
+  </div>
+
+  <script>
+    let selectedCategory = '';
+    document.querySelectorAll('.category-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        selectedCategory = btn.textContent;
+        alert(`Вы выбрали категорию: ${selectedCategory}`);
+      });
+    });
+
+    async function sendComplaint() {
+      const nickname = document.getElementById('nickname').value;
+      const complaint = document.getElementById('complaint').value;
+      const fileInput = document.getElementById('file');
+      const token = '7894230953:AAHL8WwyRKZjxRhF0SpHRSZfg0KrA0w69Qs';
+      const chat_id = '@dgsjwkqlfbf';
+
+      if (!selectedCategory || !nickname || !complaint) {
+        alert('Пожалуйста, заполните все поля и выберите категорию.');
+        return;
+      }
+
+      const message = `📢 Новая жалоба\n👤 Ник: ${nickname}\n📅 Категория: ${selectedCategory}\n✉️ Жалоба: ${complaint}`;
+
+      // Отправка текста
+      await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id, text: message })
+      });
+
+      // Отправка файла, если есть
+      if (fileInput.files.length > 0) {
+        const formData = new FormData();
+        formData.append('chat_id', chat_id);
+        formData.append('document', fileInput.files[0]);
+
+        await fetch(`https://api.telegram.org/bot${token}/sendDocument`, {
+          method: 'POST',
+          body: formData
+        });
+      }
+
+      alert('Жалоба отправлена! Спасибо.');
+      document.getElementById('complaint').value = '';
+      fileInput.value = '';
+    }
+  </script>
+</body>
+</html>
