@@ -83,5 +83,21 @@
       fileInput.value = '';
     }
   </script>
+    <script async src="https://telegram.org/js/telegram-widget.js?7"
+  data-telegram-login="strSTjalob_bot" 
+  data-size="large"
+  data-userpic="false"
+  data-request-access="write"
+  data-userpic="false"
+  data-on-auth="onTelegramAuth">
+</script>
+
+<script type="text/javascript">
+function onTelegramAuth(user) {
+alert(`Привет, ${user.first_name}!`);
+console.log(user); // Здесь будет информация о пользователе
+document.getElementById('nickname').value = '@' + user.username;
+}
+</script>
 </body>
 </html>
